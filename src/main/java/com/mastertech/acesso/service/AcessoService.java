@@ -7,10 +7,16 @@ import com.mastertech.acesso.dto.ClienteDTO;
 import com.mastertech.acesso.dto.PortaDTO;
 import com.mastertech.acesso.exceptions.ClienteNaoEncontradoException;
 import com.mastertech.acesso.exceptions.PortaNaoEncontradaException;
+import com.mastertech.acesso.log.AcessoLog;
+import com.mastertech.acesso.log.AcessoProducer;
 import com.mastertech.acesso.model.Acesso;
 import com.mastertech.acesso.repository.AcessoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 
 @Service
 public class AcessoService {
@@ -21,6 +27,27 @@ public class AcessoService {
     private ClienteClient clienteClient;
     @Autowired
     private PortaClient portaClient;
+    @Autowired
+    private AcessoProducer acessoProducer;
+
+
+
+    public String getAcessoLog(int clienteId, int portaId){
+        AcessoLog log = new AcessoLog();
+
+        log.setIdCliente(clienteId);
+        log.setIdPorta(portaId);
+        log.setAutorizado(Math.random() < 0.5);
+        log.setData(LocalDateTime.now());
+
+        acessoProducer.enviarAoKafka(log);
+
+        if(!log.isAutorizado()){
+            return "Acesso negado";
+        }
+
+        return "Acesso autorizado";
+    }
 
     public AcessoDTO getAcesso(int clienteId, int portaId){
         AcessoDTO response = new AcessoDTO();

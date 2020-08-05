@@ -11,9 +11,13 @@ public class AcessoController {
     @Autowired
     private AcessoService service;
 
-    @GetMapping("/acesso/{clienteId}/{portaId}")
+    @GetMapping("/acesso/aulapassada/{clienteId}/{portaId}")
     public AcessoDTO getAcesso(@PathVariable int clienteId, @PathVariable int portaId){
         return service.getAcesso(clienteId, portaId);
+    }
+    @GetMapping("/acesso/{clienteId}/{portaId}")
+    public String getAcessoLog(@PathVariable int clienteId, @PathVariable int portaId){
+        return service.getAcessoLog(clienteId, portaId);
     }
 
     @PostMapping("/acesso")
